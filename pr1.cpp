@@ -20,7 +20,7 @@ Konstruktowy są uzupełnione tylko przy klasach których można stworzyć obiek
 class A{
 protected:
   string name;
-  string z;
+  string a;
 private:
   static string wezel;
   string x;
@@ -45,126 +45,183 @@ public:
   string getX(){
     return x;
   }
-  virtual void setZ(string z){
-    this -> z = z;
+  virtual void seta(string a){
+    this -> a = a;
   }
-  virtual string getZ(){
-    return z;
+  virtual string geta(){
+    return a;
   }
 };
 
-class B : public A{
+class B : virtual public A{
 private:
   string x;
 protected:
-  string z;
+  string b;
 protected:
   B(){}
   ~B(){}
+public:
+  virtual void setb(string a){
+    b = a;
+  }
+  virtual string getb(){
+    return b;
+  }
 };
 
-class C : public A{
+class C : virtual public A{
 private:
   string x;
 protected:
-  string z;
+  string c;
 protected:
   C(){}
   ~C(){}
+public:
+  virtual void setc(string a){
+    c = a;
+  }
+  virtual string getc(){
+    return c;
+  }
 };
 
-class D : public A{
+class D : virtual public A{
 private:
   string x;
 protected:
-  string z;
+  string d;
 protected:
   D(){}
   ~D(){}
+public:
+  virtual void setd(string a){
+    d = a;
+  }
+  virtual string getd(){
+    return d;
+  }
 };
 
 class E : public C{
 private:
   string x;
 protected:
-  string z;
+  string e;
 public:
   E(string name){
       this -> A::name = name;
   }
   ~E(){}
-  static map<string, A*> objects;
+  static map<string, E*> objects;
+  virtual void sete(string a){
+    e = a;
+  }
+  virtual string gete(){
+    return e;
+  }
 };
 
 class F : public C{
 private:
   string x;
 protected:
-  string z;
+  string f;
 public:
   F(string name){
       this -> A::name = name;
   }
   ~F(){}
-  static map<string, A*> objects;
+  static map<string, F*> objects;
+  virtual void setf(string a){
+    f = a;
+  }
+  virtual string getf(){
+    return f;
+  }
 };
 
 class G : public D{
 private:
   string x;
 protected:
-  string z;
+  string g;
 protected:
   G(){}
   ~G(){}
 public:
+  virtual void setg(string a){
+    g = a;
+  }
+  virtual string getg(){
+    return g;
+  }
 };
 
 class H : public D{
 private:
   string x;
 protected:
-  string z;
+  string h;
 public:
   H(string name){
       this -> A::name = name;
   }
   ~H(){}
-  static map<string, A*> objects;
+  static map<string, H*> objects;
+  virtual void seth(string a){
+    h = a;
+  }
+  virtual string geth(){
+    return h;
+  }
 };
 
 class I : public B,  public C{
 private:
   string x;
 protected:
-  string z;
+  string i;
 public:
   I(string name){
       this -> B::name = name;
   }
   ~I(){}
-  static map<string, A*> objects;
+  static map<string, I*> objects;
+  virtual void seti(string a){
+    i = a;
+  }
+  virtual string geti(){
+    return i;
+  }
 };
 
 class J : public B, public G{
 private:
   string x;
 protected:
-  string z;
+  string j;
 public:
   J(string name){
     this -> B::name = name;
   }
   ~J(){}
-  static map<string, A*> objects;
+  static map<string, J*> objects;
+  virtual void setj(string a){
+    j = a;
+  }
+  virtual string getj(){
+    return j;
+  }
 };
 
 
-map<string, A*> E::objects;//inicjowanie statycznych map
-map<string, A*> F::objects;
-map<string, A*> H::objects;
-map<string, A*> I::objects;
-map<string, A*> J::objects;
+map<string, E*> E::objects;//inicjowanie statycznych map
+map<string, F*> F::objects;
+map<string, H*> H::objects;
+map<string, I*> I::objects;
+map<string, J*> J::objects;
 string A::wezel;
 
 class Polecenie{
@@ -174,57 +231,35 @@ W konstruktorze pobieramy polecenie z terminala
 */
 private:
     string polecenie, komenda, parametr, parametr1, parametr2;
+    string tab[20];
 public:
   Polecenie(){
     setPolecenie();
-    int i = 0;
-    while(polecenie[i] != ' ' && i < polecenie.size()){
-      komenda += polecenie[i];//zczytywanie litera po literze i dodawanie do stringa aż nie będzie spacji
-      i++;
-    }
-    i++;
-    while(polecenie[i] != ' ' && i < polecenie.size()){
-      parametr += polecenie[i];
-      i++;
-    }
-    i++;
-    while(polecenie[i] != ' ' && i < polecenie.size()){
-      parametr1 += polecenie[i];
-      i++;
-    }
-    i++;
-    while(polecenie[i] != ' ' && i < polecenie.size()){
-      parametr2 += polecenie[i];
-      i++;
-    }
-  }/*
-  Polecenie(string polecenie){
-    this -> polecenie = polecenie;
-    int i = 0;
-    while(polecenie[i] != '(' && i < polecenie.size()){
-      komenda += polecenie[i];
-      i++;
-    }
-    i++;
-    while(polecenie[i] != ')' && i < polecenie.size()){
-      parametr += polecenie[i];
-      i++;
-    }
-    i++;
-    while(polecenie[i] != ' '&& i < polecenie.size()){
-      parametr1 += polecenie[i];
-      i++;
-    }
-    i++;
-    while(polecenie[i] != ' ' && i < polecenie.size()){
-      parametr1 += polecenie[i];
-      i++;
-    }
-  }*/
+    split();
+  }
   ~Polecenie(){}
+
+  void split(){
+    int i = 0, j = 0;
+    while(i < polecenie.size()){
+      if(polecenie[i] == ' '){
+        i++; j++;
+      }
+      tab[j] += polecenie[i];//zczytywanie litera po literze i dodawanie do stringa aż nie będzie spacji
+      i++;
+    }
+  }
 
   string getPolecenie(){
     return polecenie;
+  }
+
+  string getParametrN(int x){
+    return tab[x];
+  }
+
+  void setParametrN(string pam, int x){
+    tab[x] = pam;
   }
 
   void setPolecenie(){
@@ -233,23 +268,23 @@ public:
     cout<<endl;
   }
   void setParametr(string parametr){
-    this -> parametr = parametr;
+    tab[1] = parametr;
   }
 
   string getKomenda(){
-    return komenda;
+    return tab[0];
   }
 
   string getParametr(){
-    return parametr;
+    return tab[1];
   }
 
   string getParametr1(){
-    return parametr1;
+    return tab[2];
   }
 
   string getParametr2(){
-    return parametr2;
+    return tab[3];
   }
   //akceptuję duże lub małe litery
   void proceed(){
@@ -293,13 +328,37 @@ private:
 //metoda usuwająca wszytskie obiekty
   void clearTree(){
     string wez = A::getWezel(); //pobieramy nazwę węzła
-    string liscie[5] = {"E","F","H","I","J"}; //tablica liści
-    map<string, A*> objects;
-    map<string, A*> tab[5] = {E::objects, F::objects,H::objects,I::objects,J::objects}; // 5 elementowa tablica map
     for(int i = 0; i < 5; i++){
-      A::setWezel(liscie[i]);// nadajemy ity liść
-      objects = tab[i]; // nadajemy mapę dla danego liścia
-      for(auto& x : objects){ // przejeżdzamy się po wszystkich obiektach w mapie i usuwamy
+      A::setWezel("E");// nadajemy ity liść
+      for(auto& x : E::objects){ // przejeżdzamy się po wszystkich obiektach w mapie i usuwamy
+        setParametr(x.first);
+        doo();
+      }
+    }
+    for(int i = 0; i < 5; i++){
+      A::setWezel("F");// nadajemy ity liść
+      for(auto& x : F::objects){ // przejeżdzamy się po wszystkich obiektach w mapie i usuwamy
+        setParametr(x.first);
+        doo();
+      }
+    }
+    for(int i = 0; i < 5; i++){
+      A::setWezel("H");// nadajemy ity liść
+      for(auto& x : H::objects){ // przejeżdzamy się po wszystkich obiektach w mapie i usuwamy
+        setParametr(x.first);
+        doo();
+      }
+    }
+    for(int i = 0; i < 5; i++){
+      A::setWezel("I");// nadajemy ity liść
+      for(auto& x : I::objects){ // przejeżdzamy się po wszystkich obiektach w mapie i usuwamy
+        setParametr(x.first);
+        doo();
+      }
+    }
+    for(int i = 0; i < 5; i++){
+      A::setWezel("J");// nadajemy ity liść
+      for(auto& x : J::objects){ // przejeżdzamy się po wszystkich obiektach w mapie i usuwamy
         setParametr(x.first);
         doo();
       }
@@ -321,39 +380,52 @@ private:
 //metoda tworząca węzeł
   void mo(){
     if(A::getWezel() == "E"){
-      E *actn = new E(getParametr()); //tworzymy nowy obiekt
-      E::objects[getParametr()]= actn; // dodajemy do mapy obiektów
-      actn -> setX(getParametr1()); // nadajemy wartość paramwtrów x i y
-      actn -> setZ(getParametr2());
-      cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<A::getWezel()<<" o parametrach "<<actn -> getX()<<", "<<actn -> getZ()<<endl;
+      E *actn = new E(getParametrN(1)); //tworzymy nowy obiekt
+      E::objects[getParametrN(1)]= actn; // dodajemy do mapy obiektów
+      actn -> setX(getParametrN(2)); // nadajemy wartość paramwtrów x i y
+      actn -> sete(getParametrN(3));
+      actn -> seta(getParametrN(4));
+      actn -> setc(getParametrN(5));
+      cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<A::getWezel()<<" o parametrach "<<actn -> getX()<<", "<<actn -> gete()<<", "<<actn -> getc()<<", "<<actn -> geta()<<endl;
     }
     else if(A::getWezel() == "F"){
-      F *actn = new F(getParametr());
-      F::objects[getParametr()]= actn;
-      actn -> setX(getParametr1());
-      actn -> setZ(getParametr2());
-      cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<A::getWezel()<<" o parametrach "<<actn -> getX()<<", "<<actn -> getZ()<<endl;
+      F *actn = new F(getParametrN(1));
+      F::objects[getParametrN(1)]= actn;
+      actn -> setX(getParametrN(2)); // nadajemy wartość paramwtrów x i y
+      actn -> setf(getParametrN(3));
+      actn -> seta(getParametrN(4));
+      actn -> setc(getParametrN(5));
+      cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<A::getWezel()<<" o parametrach "<<actn -> getX()<<", "<<actn -> getf()<<", "<<actn -> getc()<<", "<<actn -> geta()<<endl;
     }
     else if(A::getWezel() == "H"){
-      H *actn = new H(getParametr());
-      H::objects[getParametr()]= actn;
-      actn -> setX(getParametr1());
-      actn -> setZ(getParametr2());
-      cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<A::getWezel()<<" o parametrach "<<actn -> getX()<<", "<<actn -> getZ()<<endl;
+      H *actn = new H(getParametrN(1));
+      H::objects[getParametrN(1)]= actn;
+      actn -> setX(getParametrN(2)); // nadajemy wartość paramwtrów x i y
+      actn -> seth(getParametrN(3));
+      actn -> seta(getParametrN(4));
+      actn -> setd(getParametrN(5));
+      cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<A::getWezel()<<" o parametrach "<<actn -> getX()<<", "<<actn -> geth()<<", "<<actn -> getd()<<", "<<actn -> geta()<<endl;
     }
     else if(A::getWezel() == "I"){
-      B *actn = new I(getParametr());
-      I::objects[getParametr()]= actn;
-      actn -> setX(getParametr1());
-      actn -> setZ(getParametr2());
-      cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<A::getWezel()<<" o parametrach "<<actn -> getX()<<", "<<actn -> getZ()<<endl;
+      I *actn = new I(getParametrN(1));
+      I::objects[getParametrN(1)]= actn;
+      actn -> setX(getParametrN(2)); // nadajemy wartość paramwtrów x i y
+      actn -> seti(getParametrN(3));
+      actn -> seta(getParametrN(4));
+      actn -> setb(getParametrN(5));
+      actn -> setc(getParametrN(6));
+      cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<A::getWezel()<<" o parametrach "<<actn -> getX()<<", "<<actn -> geti()<<", "<<actn -> getb()<<", "<<actn -> geta()<<", "<<actn -> getc()<<endl;
     }
     else if(A::getWezel() == "J"){
-      B *actn = new J(getParametr());
-      J::objects[getParametr()]= actn;
-      actn -> setX(getParametr1());
-      actn -> setZ(getParametr2());
-      cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<A::getWezel()<<" o parametrach "<<actn -> getX()<<", "<<actn -> getZ()<<endl;
+      J *actn = new J(getParametrN(1));
+      J::objects[getParametrN(1)]= actn;
+      actn -> setX(getParametrN(2));
+      actn -> setj(getParametrN(3));
+      actn -> seta(getParametrN(4));
+      actn -> setb(getParametrN(5));
+      actn -> setg(getParametrN(6));
+      actn -> setd(getParametrN(7));
+      cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<A::getWezel()<<" o parametrach "<<actn -> getX()<<", "<<actn -> getj()<<", "<<actn -> getb()<<", "<<actn -> geta()<<", "<<actn -> getg()<<", "<<actn -> getd()<<endl;
     }
     else{
       cout<<"Nie można stworzyć obiektu, nie jesteś w liściu!"<<endl;
@@ -406,18 +478,15 @@ private:
       cout<<"Nie można usunąć obiektu, nie jesteś w liściu!"<<endl;
     }
   }
-//metoda wypisująca wszystkie obiekty danego liścia
-  void printObjects(map<string, A*> objects){
-    for(auto& x : objects){ //auto listuje po całej mapie zmieniając iterator x
-      cout<<x.first<<", "; //first to nazwa obiektu
-    }
-  }
+
 //metoda wypisująca obiekty danego węzła i jego potomków
   void dir(){
     if(A::getWezel() == "E"){
       if(!E::objects.empty()){ // sprawdzam czy liść zawiera obiekty
         cout<<"Węzeł "<<A::getWezel()<<" zawiera obiekty o nazwach: ";
-        printObjects(E::objects); // wpisujemy wszytskie obiekty dla liścia E
+        for(auto& x : E::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
         cout<<endl;
       }
       else   cout<<"Węzeł "<<A::getWezel()<<" nie zawiera żadnych obiektów!"<<endl;
@@ -425,7 +494,9 @@ private:
     else if(A::getWezel() == "F"){
       if(!F::objects.empty()){
         cout<<"Węzeł "<<A::getWezel()<<" zawiera obiekty o nazwach: ";
-        printObjects(F::objects);
+        for(auto& x : F::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
         cout<<endl;
       }
       else   cout<<"Węzeł "<<A::getWezel()<<" nie zawiera żadnych obiektów!"<<endl;
@@ -433,7 +504,9 @@ private:
     else if(A::getWezel() == "H"){
       if(!H::objects.empty()){
         cout<<"Węzeł "<<A::getWezel()<<" zawiera obiekty o nazwach: ";
-        printObjects(H::objects);
+        for(auto& x : H::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
         cout<<endl;
       }
       else   cout<<"Węzeł "<<A::getWezel()<<" nie zawiera żadnych obiektów!"<<endl;
@@ -441,7 +514,9 @@ private:
     else if(A::getWezel() == "I"){
       if(!I::objects.empty()){
         cout<<"Węzeł "<<A::getWezel()<<" zawiera obiekty o nazwach: ";
-        printObjects(I::objects);
+        for(auto& x : I::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
         cout<<endl;
       }
       else   cout<<"Węzeł "<<A::getWezel()<<" nie zawiera żadnych obiektów!"<<endl;
@@ -449,7 +524,9 @@ private:
     else if(A::getWezel() == "J"){
       if(!J::objects.empty()){
         cout<<"Węzeł "<<A::getWezel()<<" zawiera obiekty o nazwach: ";
-        printObjects(J::objects);
+        for(auto& x : J::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
         cout<<endl;
       }
       else   cout<<"Węzeł "<<A::getWezel()<<" nie zawiera żadnych obiektów!"<<endl;
@@ -458,11 +535,21 @@ private:
       if(!I::objects.empty() || !J::objects.empty() || !E::objects.empty()
            || !F::objects.empty() || !H::objects.empty()){
         cout<<"Węzeł "<<A::getWezel()<<" zawiera obiekty o nazwach: ";
-        printObjects(I::objects);
-        printObjects(J::objects);
-        printObjects(E::objects);
-        printObjects(F::objects);
-        printObjects(H::objects);
+        for(auto& x : I::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
+        for(auto& x : J::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
+        for(auto& x : E::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
+        for(auto& x : F::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
+        for(auto& x : H::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
         cout<<endl;
       }
       else   cout<<"Węzeł "<<A::getWezel()<<" nie zawiera żadnych obiektów!"<<endl;
@@ -470,8 +557,12 @@ private:
     else if(A::getWezel() == "B"){
       if(!I::objects.empty() || !J::objects.empty()){
         cout<<"Węzeł "<<A::getWezel()<<" zawiera obiekty o nazwach: ";
-        printObjects(I::objects);
-        printObjects(J::objects);
+        for(auto& x : I::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
+        for(auto& x : J::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
         cout<<endl;
       }
       else   cout<<"Węzeł "<<A::getWezel()<<" nie zawiera żadnych obiektów!"<<endl;
@@ -479,7 +570,9 @@ private:
     else if(A::getWezel() == "C"){
       if(!E::objects.empty()){
         cout<<"Węzeł "<<A::getWezel()<<" zawiera obiekty o nazwach: ";
-        printObjects(E::objects);
+        for(auto& x : E::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
         cout<<endl;
       }
       else   cout<<"Węzeł "<<A::getWezel()<<" nie zawiera żadnych obiektów!"<<endl;
@@ -487,8 +580,12 @@ private:
     else if(A::getWezel() == "D"){
       if(!H::objects.empty() || !J::objects.empty()){
         cout<<"Węzeł "<<A::getWezel()<<" zawiera obiekty o nazwach: ";
-        printObjects(H::objects);
-        printObjects(J::objects);
+        for(auto& x : H::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
+        for(auto& x : J::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
         cout<<endl;
       }
       else   cout<<"Węzeł "<<A::getWezel()<<" nie zawiera żadnych obiektów!"<<endl;
@@ -496,7 +593,9 @@ private:
     else if(A::getWezel() == "G"){
       if(!E::objects.empty()){
         cout<<"Węzeł "<<A::getWezel()<<" zawiera obiekty o nazwach: ";
-        printObjects(J::objects);
+        for(auto& x : J::objects){ //auto listuje po całej mapie zmieniając iterator x
+          cout<<x.first<<", "; //first to nazwa obiektu
+        } // wpisujemy wszytskie obiekty dla liścia
         cout<<endl;
       }
       else   cout<<"Węzeł "<<A::getWezel()<<" nie zawiera żadnych obiektów!"<<endl;
@@ -508,46 +607,63 @@ private:
 //metoda modyfikująca obiekt
   void mdo(){
     if(A::getWezel() == "E"){
-      if(E::objects.find(getParametr())!=E::objects.end()){ //sprawdzam czy istenie w liściu taki obiekt
-        E::objects[getParametr()]-> setX(getParametr1()); // zmieniam wartości parametrów
-        E::objects[getParametr()]-> setZ(getParametr2());
-        cout<<"Wartosci nowych parametrow to : "<<getParametr1()<<", "<<getParametr2()<<endl;
+      if(E::objects.find(getParametrN(1))!=E::objects.end()){ //sprawdzam czy istenie w liściu taki obiekt
+        E *actn = E::objects[getParametr()];
+        actn -> setX(getParametrN(2)); // nadajemy wartość paramwtrów x i y
+        actn -> sete(getParametrN(3));
+        actn -> seta(getParametrN(4));
+        actn -> setc(getParametrN(5));
+        cout<<"Wartosci nowych parametrow to : "<<actn -> getX()<<", "<<actn -> gete()<<", "<<actn -> getc()<<", "<<actn -> geta()<<endl;
       } else{
         cout<<"Brak takiego obiektu!"<<endl;
       }
     }
     else if(A::getWezel() == "F"){
-      if(F::objects.find(getParametr())!=F::objects.end()){
-        F::objects[getParametr()]-> setX(getParametr1());
-        F::objects[getParametr()]-> setZ(getParametr2());
-        cout<<"Wartosci nowych parametrow to : "<<getParametr1()<<", "<<getParametr2()<<endl;
+      if(F::objects.find(getParametrN(1))!=F::objects.end()){
+        F *actn = F::objects[getParametr()];
+        actn -> setX(getParametrN(2)); // nadajemy wartość paramwtrów x i y
+        actn -> setf(getParametrN(3));
+        actn -> seta(getParametrN(4));
+        actn -> setc(getParametrN(5));
+        cout<<"Wartosci nowych parametrow to : "<<actn -> getX()<<", "<<actn -> getf()<<", "<<actn -> getc()<<", "<<actn -> geta()<<endl;
       } else{
         cout<<"Brak takiego obiektu!"<<endl;
       }
     }
     else if(A::getWezel() == "H"){
-      if(H::objects.find(getParametr())!=H::objects.end()){
-        H::objects[getParametr()]-> setX(getParametr1());
-        H::objects[getParametr()]-> setZ(getParametr2());
-        cout<<"Wartosci nowych parametrow to : "<<getParametr1()<<", "<<getParametr2()<<endl;
+      if(H::objects.find(getParametrN(1))!=H::objects.end()){
+        H *actn = H::objects[getParametr()];
+        actn -> setX(getParametrN(2)); // nadajemy wartość paramwtrów x i y
+        actn -> seth(getParametrN(3));
+        actn -> seta(getParametrN(4));
+        actn -> setd(getParametrN(5));
+        cout<<"Wartosci nowych parametrow to : "<<actn -> getX()<<", "<<actn -> geth()<<", "<<actn -> getd()<<", "<<actn -> geta()<<endl;
       } else{
         cout<<"Brak takiego obiektu!"<<endl;
       }
     }
     else if(A::getWezel() == "I"){
-      if(I::objects.find(getParametr())!=I::objects.end()){
-        I::objects[getParametr()]-> setX(getParametr1());
-        I::objects[getParametr()]-> setZ(getParametr2());
-        cout<<"Wartosci nowych parametrow to : "<<getParametr1()<<", "<<getParametr2()<<endl;
+      if(I::objects.find(getParametrN(1))!=I::objects.end()){
+        I *actn = I::objects[getParametr()];
+        actn -> setX(getParametrN(2)); // nadajemy wartość paramwtrów x i y
+        actn -> seti(getParametrN(3));
+        actn -> seta(getParametrN(4));
+        actn -> setb(getParametrN(5));
+        actn -> setc(getParametrN(6));
+        cout<<"Wartosci nowych parametrow to : "<<actn -> getX()<<", "<<actn -> geti()<<", "<<actn -> getb()<<", "<<actn -> B::geta()<<", "<<actn -> getc()<<endl;
       } else{
         cout<<"Brak takiego obiektu!"<<endl;
       }
     }
     else if(A::getWezel() == "J"){
       if(J::objects.find(getParametr())!=J::objects.end()){
-        J::objects[getParametr()]-> setX(getParametr1());
-        J::objects[getParametr()]-> setZ(getParametr2());
-        cout<<"Wartosci nowych parametrow to : "<<getParametr1()<<", "<<getParametr2()<<endl;
+        J *actn = J::objects[getParametr()];
+        actn -> setj(getParametrN(3));
+        actn -> seta(getParametrN(4));
+        actn -> setb(getParametrN(5));
+        actn -> setg(getParametrN(6));
+        actn -> setd(getParametrN(7));
+        cout<<"Wartosci nowych parametrow to : "<<actn -> getX()<<", "<<actn -> getj()<<", "<<actn -> getb()<<", "<<actn -> B::geta()<<", "<<actn -> getg()<<", "<<actn -> getd()<<endl;
       } else{
         cout<<"Brak takiego obiektu!"<<endl;
       }
@@ -559,32 +675,28 @@ private:
 //metoda wyświetlająca szczegóły obiektu
   void show(){
     if( E::objects.find(getParametr()) != E::objects.end()){// sprawdzam czy dany węzeł ma obiekt o danej nazwie
-      cout<<"Nazwa obiektu to: "<<E::objects[getParametr()] -> getName()<<", a parametry to "<<E::objects[getParametr()] -> getX()<<", "<<E::objects[getParametr()] -> getZ()<<endl;
+      E *actn = E::objects[getParametrN(1)];
+      cout<<"Nazwa obiektu to: "<<E::objects[getParametrN(1)] -> getName()<<", a parametry to "<<actn -> getX()<<", "<<actn -> gete()<<", "<<actn -> getc()<<", "<<actn -> geta()<<endl;
     }
     else if(F::objects.find(getParametr()) != F::objects.end()){
-      cout<<"Nazwa obiektu to: "<<F::objects[getParametr()] -> getName()<<", a parametry to "<<F::objects[getParametr()] -> getX()<<", "<<F::objects[getParametr()] -> getZ()<<endl;
+      F *actn = F::objects[getParametrN(1)];
+      cout<<"Nazwa obiektu to: "<<F::objects[getParametrN(1)] -> getName()<<", a parametry to "<<actn -> getX()<<", "<<actn -> getf()<<", "<<actn -> getc()<<", "<<actn -> geta()<<endl;
     }
     else if(H::objects.find(getParametr()) != H::objects.end()){
-      cout<<"Nazwa obiektu to: "<<H::objects[getParametr()] -> getName()<<", a parametry to "<<H::objects[getParametr()] -> getX()<<", "<<H::objects[getParametr()] -> getZ()<<endl;
+      H *actn = H::objects[getParametrN(1)];
+      cout<<"Nazwa obiektu to: "<<H::objects[getParametrN(1)] -> getName()<<", a parametry to "<<actn -> getX()<<", "<<actn -> geth()<<", "<<actn -> getd()<<", "<<actn -> geta()<<endl;
     }
     else if(I::objects.find(getParametr()) != I::objects.end()){
-      cout<<"Nazwa obiektu to: "<<I::objects[getParametr()] -> getName()<<", a parametry to "<<I::objects[getParametr()] -> getX()<<", "<<I::objects[getParametr()] -> getZ()<<endl;
+      I *actn = I::objects[getParametrN(1)];
+      cout<<"Nazwa obiektu to: "<<I::objects[getParametrN(1)] -> getName()<<", a parametry to "<<actn -> getX()<<", "<<actn -> geti()<<", "<<actn -> getb()<<", "<<actn -> geta()<<", "<<actn -> getc()<<endl;
     }
     else if(J::objects.find(getParametr()) != J::objects.end()){
-      cout<<"Nazwa obiektu to: "<<J::objects[getParametr()] -> getName()<<", a parametry to "<<J::objects[getParametr()] -> getX()<<", "<<J::objects[getParametr()] -> getZ()<<endl;
+      J *actn = J::objects[getParametrN(1)];
+      cout<<"Nazwa obiektu to: "<<J::objects[getParametrN(1)] -> getName()<<", a parametry to "<<actn -> getX()<<", "<<actn -> getj()<<", "<<actn -> getb()<<", "<<actn -> geta()<<", "<<actn -> getg()<<", "<<actn -> getd()<<endl;
     }
-    else cout<<"Nie ma obiektu o nazwie "<<getParametr()<<endl;
+    else cout<<"Nie ma obiektu o nazwie "<<getParametrN(1)<<endl;
   }
-//metoda zapisująca obiekty danego liścia do pliku
-  void saveObjects(map<string, A*> objects, string klas){
-    fstream plik;
-    plik.open("data.txt", ios::out|ios::app); // otwieram plik
-    for(auto& x : objects){ // iteruje po mapie
-      plik<<x.first<<" "<<klas<<" "<<x.second -> getX()<<" "<<x.second -> getZ()<<endl; // zapisuję do jednej linijki wsyztskie informacje o obiekcie
-      cout<<x.first + ", ";
-    }
-    plik.close();
-  }
+
 //metoda zapisująca wszystkie obiekty do pliku
   void savee(){
     fstream plik;
@@ -593,27 +705,57 @@ private:
     plik.close();
       if(!E::objects.empty()){ // sprawdzam czy liść ma jakieś obiekty
         cout<<"Zapisano obiekty klasy E o nazwie: ";
-        saveObjects(E::objects,"E"); // zapisuję
+        fstream plik;
+        plik.open("data.txt", ios::out|ios::app); // otwieram plik
+        for(auto& x : E::objects){ // iteruje po mapie
+          plik<<"E "<<x.first<<" "<<x.second -> getX()<<" "<<x.second -> gete()<<" "<<x.second -> geta()<<" "<<x.second -> getc()<<endl; // zapisuję do jednej linijki wsyztskie informacje o obiekcie
+          cout<<x.first + ", ";
+        }
+        plik.close();
         cout<<endl;
       }
       if(!F::objects.empty()){
         cout<<"Zapisano obiekty klasy F o nazwie: ";
-        saveObjects(F::objects, "F");
+        fstream plik;
+        plik.open("data.txt", ios::out|ios::app); // otwieram plik
+        for(auto& x : F::objects){ // iteruje po mapie
+          plik<<"F "<<x.first<<" "<<x.second -> getX()<<" "<<x.second -> getf()<<" "<<x.second -> geta()<<" "<<x.second -> getc()<<endl; // zapisuję do jednej linijki wsyztskie informacje o obiekcie
+          cout<<x.first + ", ";
+        }
+        plik.close();
         cout<<endl;
       }
       if(!H::objects.empty()){
         cout<<"Zapisano obiekty klasy H o nazwie: ";
-        saveObjects(H::objects, "H");
+        fstream plik;
+        plik.open("data.txt", ios::out|ios::app); // otwieram plik
+        for(auto& x : H::objects){ // iteruje po mapie
+          plik<<"H "<<x.first<<" "<<x.second -> getX()<<" "<<x.second -> geth()<<" "<<x.second -> geta()<<" "<<x.second -> getd()<<endl; // zapisuję do jednej linijki wsyztskie informacje o obiekcie
+          cout<<x.first + ", ";
+        }
+        plik.close();
         cout<<endl;
       }
       if(!I::objects.empty()){
         cout<<"Zapisano obiekty klasy I o nazwie: ";
-        saveObjects(I::objects, "I");
+        fstream plik;
+        plik.open("data.txt", ios::out|ios::app); // otwieram plik
+        for(auto& x : I::objects){ // iteruje po mapie
+          plik<<"I "<<x.first<<" "<<x.second -> getX()<<" "<<x.second -> geti()<<" "<<x.second -> geta()<<" "<<x.second -> getb()<<" "<<x.second -> getc()<<endl; // zapisuję do jednej linijki wsyztskie informacje o obiekcie
+          cout<<x.first + ", ";
+        }
+        plik.close();
         cout<<endl;
       }
       if(!J::objects.empty()){
         cout<<"Zapisano obiekty klasy J o nazwie: ";
-        saveObjects(J::objects,"J");
+        fstream plik;
+        plik.open("data.txt", ios::out|ios::app); // otwieram plik
+        for(auto& x : J::objects){ // iteruje po mapie
+          plik<<"J "<<x.first<<" "<<x.second -> getX()<<" "<<x.second -> getj()<<" "<<x.second -> geta()<<" "<<x.second -> getb()<<" "<<x.second -> getg()<<" "<<x.second -> getd()<<endl; // zapisuję do jednej linijki wsyztskie informacje o obiekcie
+          cout<<x.first + ", ";
+        }
+        plik.close();
         cout<<endl;
       }
       if(E::objects.empty() && F::objects.empty()
@@ -621,61 +763,87 @@ private:
          && J::objects.empty())
          cout<<"Nie ma żadnych obiektów do zapisu!"<<endl;
   }
-//metoda tworząca wczytane obiekty
-  void createRead(string name, string klasa, string parametr1,string parametr2){
-    if(klasa == "E"){ // sprawdzanie klasy
-      E *actn = new E(name); //tworzenie nowego obiektu
-      actn -> setX(parametr1); //nadawanie wartości parametrom
-      actn -> setZ(parametr2);
-      E::objects[name]= actn; // dopisywanie do mapy obiektóe
-      cout<<"Stworzono obiekt klasy "<<klasa<<" o nazwie: "<<name<<" i parametrach : "<<actn -> getX()<<", "<<actn -> getZ()<<endl;
-    }
-    else if(klasa == "F"){
-      F *actn = new F(name);
-      actn -> setX(parametr1);
-      actn -> setZ(parametr2);
-      F::objects[name]= actn;
-      cout<<"Stworzono obiekt klasy "<<klasa<<" o nazwie: "<<name<<" i parametrze : "<<actn -> getX()<<", "<<actn -> getZ()<<endl;
-    }
-    else if(klasa == "H"){
-      H *actn = new H(name);
-      actn -> setX(parametr1);
-      actn -> setZ(parametr2);
-      H::objects[name]= actn;
-      cout<<"Stworzono obiekt klasy "<<klasa<<" o nazwie: "<<name<<" i parametrze : "<<actn -> getX()<<", "<<actn -> getZ()<<endl;
-    }
-    else if(klasa == "I"){
-      B *actn = new I(name);
-      actn -> setX(parametr1);
-      actn -> setZ(parametr2);
-      I::objects[name]= actn;
-      cout<<"Stworzono obiekt klasy "<<klasa<<" o nazwie: "<<name<<" i parametrze : "<<actn -> getX()<<", "<<actn -> getZ()<<endl;
-    }
-    else if(klasa == "J"){
-      B *actn = new J(name);
-      actn -> setX(parametr1);
-      actn -> setZ(parametr2);
-      J::objects[name]= actn;
-      cout<<"Stworzono obiekt klasy "<<klasa<<" o nazwie: "<<name<<" i parametrze : "<<actn -> getX()<<", "<<actn -> getZ()<<endl;
-    }
-    else{
-      cout<<"Nie można stworzyć obiektu, nie ma takiego liścia!"<<endl;
-    }
-  }
+
+
+
+  void createRead(string tax[]){
+    if(tax[0] == "E"){
+       E *actn = new E(tax[1]); //tworzymy nowy obiekt
+       E::objects[tax[1]]= actn; // dodajemy do mapy obiektów
+       actn -> setX(tax[2]); // nadajemy wartość paramwtrów x i y
+       actn -> sete(tax[3]);
+       actn -> seta(tax[4]);
+       actn -> setc(tax[5]);
+       cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<tax[0]<<" o parametrach "<<actn -> getX()<<", "<<actn -> gete()<<", "<<actn -> getc()<<", "<<actn -> geta()<<endl;
+     }
+     else if(tax[0] == "F"){
+       F *actn = new F(tax[1]);
+       F::objects[tax[1]]= actn;
+       actn -> setX(tax[2]); // nadajemy wartość paramwtrów x i y
+       actn -> setf(tax[3]);
+       actn -> seta(tax[4]);
+       actn -> setc(tax[5]);
+       cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<tax[0]<<" o parametrach "<<actn -> getX()<<", "<<actn -> getf()<<", "<<actn -> getc()<<", "<<actn -> geta()<<endl;
+     }
+     else if(tax[0] == "H"){
+       H *actn = new H(tax[1]);
+       H::objects[tax[1]]= actn;
+       actn -> setX(tax[2]); // nadajemy wartość paramwtrów x i y
+       actn -> seth(tax[3]);
+       actn -> seta(tax[4]);
+       actn -> setd(tax[5]);
+       cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<tax[0]<<" o parametrach "<<actn -> getX()<<", "<<actn -> geth()<<", "<<actn -> getd()<<", "<<actn -> geta()<<endl;
+     }
+     else if(tax[0] == "I"){
+       I *actn = new I(tax[1]);
+       I::objects[tax[1]]= actn;
+       actn -> setX(tax[2]); // nadajemy wartość paramwtrów x i y
+       actn -> seti(tax[3]);
+       actn -> seta(tax[4]);
+       actn -> setb(tax[5]);
+       actn -> setc(tax[6]);
+       cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<tax[0]<<" o parametrach "<<actn -> getX()<<", "<<actn -> geti()<<", "<<actn -> getb()<<", "<<actn -> geta()<<", "<<actn -> getc()<<endl;
+     }
+     else if(tax[0] == "J"){
+       J *actn = new J(tax[1]);
+       J::objects[tax[1]]= actn;
+       actn -> setX(tax[2]);
+       actn -> setj(tax[3]);
+       actn -> seta(tax[4]);
+       actn -> setb(tax[5]);
+       actn -> setg(tax[6]);
+       actn -> setd(tax[7]);
+       cout<<"Dodałeś obiekt o nazwie "<<actn ->getName()<<" do liścia "<<tax[0]<<" o parametrach "<<actn -> getX()<<", "<<actn -> getj()<<", "<<actn -> getb()<<", "<<actn -> geta()<<", "<<actn -> getg()<<", "<<actn -> getd()<<endl;
+     }
+     else{
+       cout<<"Nie można stworzyć obiektu, nie ma takiego liścia!"<<endl;
+     }
+   }
+
+
+
   //metoda wczytująca obiekty z pliku
   void readd(){
+    string ww = A::getWezel();
     fstream plik;
-    string name, klasa, parametr1;
     plik.open("data.txt", ios::in); //otwarcie pliku
-    //if(plik.tellg() == 0) cout<<"Plik do odczytu jest pusty!"<<endl;
-    //else{
       while(!plik.eof()){
-        klasa = "none";
-        plik>>name>>klasa>>parametr1>>parametr2; // zczytywanie pliku
-        if(klasa!="none")//jeśli pusta linijka to klasa będzie mieć wartość none, więc nie będzie tworzyć nowej klasy, zlikwidowało to podwójne tworzenie ostatniej klasy w pliku
-          createRead(name, klasa, parametr1,parametr2);
+        string linia = "";
+        getline(plik,linia);
+        if(linia!=""){//jeśli pusta linijka to klasa będzie mieć wartość none, więc nie będzie tworzyć nowej klasy, zlikwidowało to podwójne tworzenie ostatniej klasy w pliku
+          int i = 0, j = 0;
+          string tax[20];
+          while(i < linia.size()){
+          if(linia[i] == ' '){
+            i++; j++;
+          }
+          tax[j] += linia[i];//zczytywanie litera po literze i dodawanie do stringa aż nie będzie spacji
+          i++;
+          }
+          createRead(tax);
+        }
       }
-  //  }
+    A::setWezel(ww);
   }
 //metoda wypisująca drzewo dizedziczenia
   void tree(){
@@ -697,6 +865,7 @@ private:
 
 int main(){
     do{
+      cout<<"Liczba argumentów: E(5), F(5), H(5), I(6), J(7)"<<endl;
       Polecenie *pol = new Polecenie();
       pol -> proceed();
       delete pol;
